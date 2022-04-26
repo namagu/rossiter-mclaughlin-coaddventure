@@ -136,7 +136,32 @@ def kepler_solver(n, P, nP, theta0, r0, ):
         
     return t_array, r, thetas, x, y, z
 
-def unpack_star(star, test=Fale):
+def get_rp(mp):
+    """
+    Estimate planet radius using planet mass
+    
+    Adapted from Quadry Chance
+    
+    Inputs:
+        mp, planet mass, Mearth
+        
+    Returns:
+        rp, planet radius, Rearth
+    
+    """
+    if mp > 2.129339456373544:
+        rp = 1
+        while rp < 1.2:
+            rp = ((m-np.random.randn()*1.9)/2.7)**(1./1.3)
+            #print(rp)
+            if np.isnan(rp):
+                rp=1
+
+        return rp
+    else:
+        return (m/1.4)**(1./2.3)
+
+def unpack_star(star, test=False):
     """
     Get parameters for running Kepler solver, R-M calculation for a given 
        star-planet system
@@ -157,17 +182,14 @@ def unpack_star(star, test=Fale):
         koimstar, koirstar, koiPstar = star['Mass'], star['Mass'], star['Prot'] 
 
     
-    # star
+    # star parameters
     mstar = koimstar * u.M_sun  # stellar mass
     rstar = koirstar * u.R_sun  # stellar radius
     Pstar = koiPstar * u.d # stellar rotation period
     phi_star = 0.*(np.pi/180) 
     
-    # planet
-    mp = koimp * u.M_earth # 1 * u.M_jupiter # planet mass
-    rp = koirp * u.R_earth # 1 * u.R_jup # planet radius
-
-
+    # planet parameters
+    mp = koi
     
 
 def main():
@@ -182,7 +204,7 @@ def main():
     
     """
     
-    ca
+    
     
     kepler_solver()
 
