@@ -136,30 +136,6 @@ def kepler_solver(n, P, nP, theta0, r0, ):
         
     return t_array, r, thetas, x, y, z
 
-def get_rp(mp):
-    """
-    Estimate planet radius using planet mass
-    
-    Adapted from Quadry Chance
-    
-    Inputs:
-        mp, planet mass, Mearth
-        
-    Returns:
-        rp, planet radius, Rearth
-    
-    """
-    if mp > 2.129339456373544:
-        rp = 1
-        while rp < 1.2:
-            rp = ((m-np.random.randn()*1.9)/2.7)**(1./1.3)
-            #print(rp)
-            if np.isnan(rp):
-                rp=1
-
-        return rp
-    else:
-        return (m/1.4)**(1./2.3)
 
 def unpack_star(star, test=False):
     """
@@ -189,7 +165,22 @@ def unpack_star(star, test=False):
     phi_star = 0.*(np.pi/180) 
     
     # planet parameters
-    mp = koi
+    rp = star['koi_prad'] * u.R_earth
+    mp = star['koi_prad'] * u.M_earth   # !!!! HELLO THIS IS JUST THE RADIUS !!!!
+    
+    # orbit parameters
+    P = star['koi_period'] * u.day
+    a = get_a(mstar, mp, P)
+    e = 0.0   
+    omega = np.pi * 0.5, 
+    b = 0.
+    incl = get_incl(b, a, rstar, e, omega)
+    
+    print(f"incl = {incl*(180/np.pi) :.3} deg")
+    
+    K = ((2 * math.pi * const.G) / P)**(1/3) * ((mp * math.sin(incl))/(mp + mstar)**(2/3)) / (math.sqrt(1 - e**2))
+print(f"K, semi-amplitude = {K.decompose()}")
+
     
 
 def main():
@@ -203,10 +194,6 @@ def main():
         crime
     
     """
-    
-    
-    
-    kepler_solver()
 
 
 
