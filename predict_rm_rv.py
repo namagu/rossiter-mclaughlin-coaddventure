@@ -136,7 +136,8 @@ def kepler_solver(n, P, nP, theta0, r0, ):
         
     return t_array, r, thetas, x, y, z
 
-def unpack_star(star, test=Fale):
+
+def unpack_star(star, test=False):
     """
     Get parameters for running Kepler solver, R-M calculation for a given 
        star-planet system
@@ -157,16 +158,28 @@ def unpack_star(star, test=Fale):
         koimstar, koirstar, koiPstar = star['Mass'], star['Mass'], star['Prot'] 
 
     
-    # star
+    # star parameters
     mstar = koimstar * u.M_sun  # stellar mass
     rstar = koirstar * u.R_sun  # stellar radius
     Pstar = koiPstar * u.d # stellar rotation period
     phi_star = 0.*(np.pi/180) 
     
-    # planet
-    mp = koimp * u.M_earth # 1 * u.M_jupiter # planet mass
-    rp = koirp * u.R_earth # 1 * u.R_jup # planet radius
-
+    # planet parameters
+    rp = star['koi_prad'] * u.R_earth
+    mp = star['koi_prad'] * u.M_earth   # !!!! HELLO THIS IS JUST THE RADIUS !!!!
+    
+    # orbit parameters
+    P = star['koi_period'] * u.day
+    a = get_a(mstar, mp, P)
+    e = 0.0   
+    omega = np.pi * 0.5, 
+    b = 0.
+    incl = get_incl(b, a, rstar, e, omega)
+    
+    print(f"incl = {incl*(180/np.pi) :.3} deg")
+    
+    K = ((2 * math.pi * const.G) / P)**(1/3) * ((mp * math.sin(incl))/(mp + mstar)**(2/3)) / (math.sqrt(1 - e**2))
+print(f"K, semi-amplitude = {K.decompose()}")
 
     
 
@@ -181,10 +194,6 @@ def main():
         crime
     
     """
-    
-    ca
-    
-    kepler_solver()
 
 
 
